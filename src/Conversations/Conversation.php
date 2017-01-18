@@ -42,7 +42,7 @@ class Conversation extends Eloquent
      *
      * @return     <type>
      */
-    public function getMessages($userId, $perPage = 25, $page = 1, $sorting = 'asc', $columns = ['*'], $pageName = 'page')
+    public function getMessages($userId, $perPage = 25, $page = 1, $sorting = 'asc', $columns = ['messages.*', 'message_notification.is_seen'], $pageName = 'page')
     {
         return $this->messages()
             ->join('message_notification', 'message_notification.message_id', '=', 'messages.id')
