@@ -33,7 +33,7 @@ class Message extends Eloquent
             'message' => Message::class,
         ]);
 
-        return $this->morphMany(Attachment::class, 'entity');
+        return $this->morphMany(Chat::attachment_model(), 'entity');
     }
 
     /**
