@@ -7,6 +7,7 @@ use Musonza\Chat\Conversations\Conversation;
 use Musonza\Chat\Eventing\EventGenerator;
 use Musonza\Chat\Chat;
 use Musonza\Chat\Notifications\MessageNotification;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Message extends Eloquent
 {
@@ -24,6 +25,15 @@ class Message extends Eloquent
     public function conversation()
     {
         return $this->belongsTo('Musonza\Chat\Conversations\Conversation', 'conversation_id');
+    }
+    
+    public function attachments()
+    {
+        Relation::morphMap([
+            'message' => Message::class,
+        ]);
+
+        return $this->morphMany(Attachment::class, 'entity');
     }
 
     /**
