@@ -199,5 +199,10 @@ class Chat
     {
         return config('chat.user_model');
     }
+    
+    public static function attachmentModel()
+    {
+        return config('chat.attachment_model');
+    }
 
 }
