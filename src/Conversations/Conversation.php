@@ -27,7 +27,8 @@ class Conversation extends Eloquent
      */
     public function messages()
     {
-        return $this->hasMany('Musonza\Chat\Messages\Message', 'conversation_id')->with('sender');
+        return $this->hasMany('Musonza\Chat\Messages\Message', 'conversation_id')
+            ->with('sender', 'attachments');
     }
 
     /**
