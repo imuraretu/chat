@@ -17,7 +17,7 @@ class Conversation extends Eloquent
      */
     public function profiles()
     {
-        return $this->belongsToMany(Chat::userModel(), 'conversation_profile')->withTimestamps();
+        return $this->belongsToMany(Chat::profileModel(), 'conversation_profile')->withTimestamps();
     }
 
     /**
@@ -43,12 +43,12 @@ class Conversation extends Eloquent
      *
      * @return     <type>
      */
-    public function getMessages($userId, $perPage = 25, $page = 1, $sorting = 'asc', $columns = ['messages.*', 'message_notification.is_seen'], $pageName = 'page')
+    public function getMessages($profileId, $perPage = 25, $page = 1, $sorting = 'asc', $columns = ['messages.*', 'message_notification.is_seen'], $pageName = 'page')
     {
         return $this->messages()
             ->join('message_notification', 'message_notification.message_id', '=', 'messages.id')
             ->whereNull('message_notification.deleted_at')
-            ->where('message_notification.profile_id', $userId)
+            ->where('message_notification.profile_id', $profileId)
             ->orderBy('messages.id', $sorting)
             ->paginate($perPage, $columns, $pageName, $page);
     }
@@ -59,17 +59,17 @@ class Conversation extends Eloquent
      * @param  integer  $userId
      * @return void
      */
-    public function addParticipants($userIds)
+    public function addParticipants($profileIds)
     {
-        if (is_array($userIds)) {
-            foreach ($userIds as $id) {
-                $this->users()->attach($id);
+        if (is_array($profileIds)) {
+            foreach ($profileIds as $id) {
+                $this->profiles()->attach($id);
             }
         } else {
-            $this->users()->attach($userIds);
+            $this->profiles()->attach($profileIds);
         }
 
-        if ($this->users->count() > 2) {
+        if ($this->profiles->count() > 2) {
             $this->private = false;
             $this->save();
         }
@@ -81,19 +81,19 @@ class Conversation extends Eloquent
      * Remove user from conversation
      *
      * @param  User  $userId
-     * @return void
+     * @return mixed
      */
-    public function removeUsers($userId)
+    public function removeParticipants($profileIds)
     {
-        if (is_array($userId)) {
-            foreach ($userId as $id) {
-                $this->users()->detach($id);
+        if (is_array($profileIds)) {
+            foreach ($profileIds as $id) {
+                $this->profiles()->detach($id);
             }
 
             return $this;
         }
 
-        $this->users()->detach($userId);
+        $this->users()->detach($profileIds);
 
         return $this;
     }
@@ -133,10 +133,10 @@ class Conversation extends Eloquent
      *
      * @return     array
      */
-    public function userConversations($userId)
+    public function userConversations($profileId)
     {
         return $this->join('conversation_profile', 'conversation_profile.conversation_id', '=', 'conversations.id')
-            ->where('conversation_profile.profile_id', $userId)
+            ->where('conversation_profile.profile_id', $profileId)
             ->where('private', true)
             ->pluck('conversations.id');
     }
@@ -151,7 +151,7 @@ class Conversation extends Eloquent
      */
     public function clear($conversationId, $profileId)
     {
-        return MessageNotification::where('user_id', $profileId)
+        return MessageNotification::where('profile_id', $profileId)
             ->where('conversation_id', $conversationId)
             ->delete();
     }
