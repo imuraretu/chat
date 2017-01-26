@@ -135,8 +135,8 @@ class Conversation extends Eloquent
      */
     public function userConversations($userId)
     {
-        return $this->join('conversation_user', 'conversation_user.conversation_id', '=', 'conversations.id')
-            ->where('conversation_user.user_id', $userId)
+        return $this->join('conversation_profile', 'conversation_profile.conversation_id', '=', 'conversations.id')
+            ->where('conversation_profile.profile_id', $userId)
             ->where('private', true)
             ->pluck('conversations.id');
     }
@@ -145,20 +145,20 @@ class Conversation extends Eloquent
      * Clears user conversation
      *
      * @param      integer  $conversationId
-     * @param      integer  $userId
+     * @param      integer  $profileId
      *
      * @return
      */
-    public function clear($conversationId, $userId)
+    public function clear($conversationId, $profileId)
     {
-        return MessageNotification::where('user_id', $userId)
+        return MessageNotification::where('user_id', $profileId)
             ->where('conversation_id', $conversationId)
             ->delete();
     }
 
-    public function conversationRead($conversationId, $userId)
+    public function conversationRead($conversationId, $profileId)
     {
-        return MessageNotification::where('user_id', $userId)
+        return MessageNotification::where('profile_id', $profileId)
             ->where('conversation_id', $conversationId)
             ->update(['is_seen' => 1]);
     }
