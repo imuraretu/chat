@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Message extends Eloquent
 {
-    protected $fillable = ['body', 'user_id', 'type'];
+    protected $fillable = ['body', 'profile_id', 'type'];
 
     protected $table = 'messages';
 
@@ -19,7 +19,7 @@ class Message extends Eloquent
 
     public function sender()
     {
-        return $this->belongsTo(Chat::userModel(), 'user_id');
+        return $this->belongsTo(Chat::profileModel(), 'profile_id');
     }
 
     public function conversation()
@@ -46,11 +46,11 @@ class Message extends Eloquent
      *
      * @return     Message
      */
-    public function send(Conversation $conversation, $body, $userId, $type = 'text')
+    public function send(Conversation $conversation, $body, $profileId, $type = 'text')
     {
         $message = $conversation->messages()->create([
             'body' => $body,
-            'user_id' => $userId,
+            'profile_id' => $profileId,
             'type' => $type,
         ]);
 
@@ -63,13 +63,13 @@ class Message extends Eloquent
      * Deletes a message
      *
      * @param      integer  $messageId
-     * @param      integer  $userId
+     * @param      integer  $profileId
      *
      * @return
      */
-    public function trash($messageId, $userId)
+    public function trash($messageId, $profileId)
     {
-        return MessageNotification::where('user_id', $userId)
+        return MessageNotification::where('profile_id', $profileId)
             ->where('message_id', $messageId)
             ->delete();
     }
@@ -82,9 +82,9 @@ class Message extends Eloquent
      *
      * @return
      */
-    public function messageRead($messageId, $userId)
+    public function messageRead($messageId, $profileId)
     {
-        return MessageNotification::where('user_id', $userId)
+        return MessageNotification::where('profile_id', $profileId)
             ->where('message_id', $messageId)
             ->update(['is_seen' => 1]);
     }

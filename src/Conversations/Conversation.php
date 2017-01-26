@@ -15,9 +15,9 @@ class Conversation extends Eloquent
      *
      * @return User
      */
-    public function users()
+    public function profiles()
     {
-        return $this->belongsToMany(Chat::userModel(), 'conversation_user')->withTimestamps();
+        return $this->belongsToMany(Chat::userModel(), 'conversation_profile')->withTimestamps();
     }
 
     /**
@@ -48,7 +48,7 @@ class Conversation extends Eloquent
         return $this->messages()
             ->join('message_notification', 'message_notification.message_id', '=', 'messages.id')
             ->whereNull('message_notification.deleted_at')
-            ->where('message_notification.user_id', $userId)
+            ->where('message_notification.profile_id', $userId)
             ->orderBy('messages.id', $sorting)
             ->paginate($perPage, $columns, $pageName, $page);
     }

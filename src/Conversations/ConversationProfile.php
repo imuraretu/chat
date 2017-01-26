@@ -4,9 +4,9 @@ namespace Musonza\Chat\Conversations;
 
 use Eloquent;
 
-class ConversationUser extends Eloquent
+class ConversationProfile extends Eloquent
 {
-    protected $table = 'conversation_user';
+    protected $table = 'conversation_profile';
 
     public function conversation()
     {

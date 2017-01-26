@@ -16,13 +16,13 @@ class CreateMessageNotificationTable extends Migration
             $table->increments('id');
             $table->integer('message_id')->unsigned();
             $table->integer('conversation_id')->unsigned();
-            $table->integer('user_id')->unsigned();
+            $table->integer('profile_id')->unsigned();
             $table->boolean('is_seen')->default(false);
             $table->boolean('is_sender')->default(false);
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
 
-            $table->index(['user_id', 'message_id']);
+            $table->index(['profile_id', 'message_id']);
 
             $table->foreign('message_id')
                 ->references('id')->on('messages')
@@ -32,8 +32,8 @@ class CreateMessageNotificationTable extends Migration
                 ->references('id')->on('conversations')
                 ->onDelete('cascade');
 
-            $table->foreign('user_id')
-                ->references('id')->on('users')
+            $table->foreign('profile_id')
+                ->references('id')->on('profiles')
                 ->onDelete('cascade');
         });
     }

@@ -49,13 +49,13 @@ class Chat
      * Add user(s) to a conversation
      *
      * @param int $conversationId
-     * @param mixed $userId / array of user ids or an integer
+     * @param mixed $profileId / array of user ids or an integer
      *
      * @return Conversation
      */
-    public function addParticipants($conversationId, $userId)
+    public function addParticipants($conversationId, $profileId)
     {
-        return $this->conversation($conversationId)->addParticipants($userId);
+        return $this->conversation($conversationId)->addParticipants($profileId);
     }
 
     /**
@@ -84,34 +84,34 @@ class Chat
      *
      * @return Coonversation
      */
-    public function removeParticipants($conversationId, $userId)
+    public function removeParticipants($conversationId, $profileId)
     {
-        return $this->conversation($conversationId)->removeUsers($userId);
+        return $this->conversation($conversationId)->removeUsers($profileId);
     }
 
     /**
      * Get recent user messages for each conversation
      *
-     * @param int $userId
+     * @param int $profileId
      *
      * @return Message
      */
-    public function conversations($userId)
+    public function conversations($profileId)
     {
-        $c = ConversationUser::join('messages', 'messages.conversation_id', '=', 'conversation_user.conversation_id')
-            ->where('conversation_user.user_id', $userId)
+        $c = ConversationUser::join('messages', 'messages.conversation_id', '=', 'conversation_profile.conversation_id')
+            ->where('conversation_profile.profile_id', $profileId)
             ->groupBy('messages.conversation_id')
             ->orderBy('messages.id', 'DESC')
-            ->get(['messages.*', 'messages.id as message_id', 'conversation_user.*']);
+            ->get(['messages.*', 'messages.id as message_id', 'conversation_profile.*']);
 
         $messages = [];
 
-        foreach ($c as $user) {
+        foreach ($c as $profile) {
 
-            $recent_message = $user->conversation->messages()->orderBy('id', 'desc')->first()->toArray();
+            $recent_message = $profile->conversation->messages()->orderBy('id', 'desc')->first()->toArray();
 
-            $notification = MessageNotification::where('user_id', $userId)
-                ->where('message_id', $user->id)
+            $notification = MessageNotification::where('profile_id', $profileId)
+                ->where('message_id', $profile->id)
                 ->get(['message_notification.id',
                     'message_notification.is_seen',
                     'message_notification.is_sender']
@@ -129,57 +129,57 @@ class Chat
     /**
      * Get messages in a conversation
      *
-     * @param int $userId
+     * @param int $profileId
      * @param int $conversationId
      * @param int $perPage
      * @param int $page
      *
      * @return Message
      */
-    public function messages($userId, $conversationId, $perPage = null, $page = null)
+    public function messages($profileId, $conversationId, $perPage = null, $page = null)
     {
-        return $this->conversation($conversationId)->getMessages($userId, $perPage, $page);
+        return $this->conversation($conversationId)->getMessages($profileId, $perPage, $page);
     }
 
     /**
      * Deletes message
      *
      * @param      int  $messageId
-     * @param      int  $userId     user id
+     * @param      int  $profileId     profile id
      *
      * @return     void
      */
-    public function trash($messageId, $userId)
+    public function trash($messageId, $profileId)
     {
-        return $this->message->trash($messageId, $userId);
+        return $this->message->trash($messageId, $profileId);
     }
 
     /**
      * clears conversation
      *
      * @param      int  $conversationId
-     * @param      int  $userId
+     * @param      int  $profileId
      */
-    public function clear($conversationId, $userId)
+    public function clear($conversationId, $profileId)
     {
-        return $this->conversation->clear($conversationId, $userId);
+        return $this->conversation->clear($conversationId, $profileId);
     }
 
-    public function messageRead($messageId, $userId)
+    public function messageRead($messageId, $profileId)
     {
-        return $this->message->messageRead($messageId, $userId);
+        return $this->message->messageRead($messageId, $profileId);
     }
 
-    public function conversationRead($conversationId, $userId)
+    public function conversationRead($conversationId, $profileId)
     {
-        $this->conversation->conversationRead($conversationId, $userId);
+        $this->conversation->conversationRead($conversationId, $profileId);
     }
 
-    public function getConversationBetweenUsers($userOne, $userTwo)
+    public function getConversationBetweenUsers($profileOne, $profileTwo)
     {
-        $conversation1 = $this->conversation->userConversations($userOne)->toArray();
+        $conversation1 = $this->conversation->userConversations($profileOne)->toArray();
 
-        $conversation2 = $this->conversation->userConversations($userTwo)->toArray();
+        $conversation2 = $this->conversation->userConversations($profileTwo)->toArray();
 
         $common_conversations = $this->getConversationsInCommon($conversation1, $conversation2);
 
@@ -195,9 +195,9 @@ class Chat
         return array_values(array_intersect($conversation1, $conversation2));
     }
 
-    public static function userModel()
+    public static function profileModel()
     {
-        return config('chat.user_model');
+        return config('chat.profile_model');
     }
     
     public static function attachmentModel()

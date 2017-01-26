@@ -1,5 +1,5 @@
 <?php
 return [
-    'user_model' => "App\User",
+    'profile_model' => "App\Profile",
     'attachment_model' => "App\Attachment",
 ];

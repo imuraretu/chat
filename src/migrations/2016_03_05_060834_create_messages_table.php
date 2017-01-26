@@ -16,13 +16,13 @@ class CreateMessagesTable extends Migration
             $table->increments('id');
             $table->text('body');
             $table->integer('conversation_id')->unsigned();
-            $table->integer('user_id')->unsigned();
+            $table->integer('profile_id')->unsigned();
             $table->string('type')->default('text');
             $table->timestamps();
 
-            $table->foreign('user_id')
+            $table->foreign('profile_id')
                 ->references('id')
-                ->on('users');
+                ->on('profiles');
 
             $table->foreign('conversation_id')
                 ->references('id')

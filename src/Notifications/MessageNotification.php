@@ -12,7 +12,7 @@ class MessageNotification extends Eloquent
 {
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'message_id', 'conversation_id'];
+    protected $fillable = ['profile_id', 'message_id', 'conversation_id'];
 
     protected $table = 'message_notification';
 
@@ -20,7 +20,7 @@ class MessageNotification extends Eloquent
 
     public function sender()
     {
-        return $this->belongsTo(Chat::userModel(), 'user_id');
+        return $this->belongsTo(Chat::profileModel(), 'profile_id');
     }
 
     public function message()
@@ -38,12 +38,12 @@ class MessageNotification extends Eloquent
     {
         $notification = [];
 
-        foreach ($conversation->users as $user) {
+        foreach ($conversation->profiles as $profile) {
 
-            $is_sender = ($message->user_id == $user->id) ? 1 : 0;
+            $is_sender = ($message->user_id == $profile->id) ? 1 : 0;
 
             $notification[] = [
-                'user_id' => $user->id,
+                'profile_id' => $profile->id,
                 'message_id' => $message->id,
                 'conversation_id' => $conversation->id,
                 'is_seen' => $is_sender,
