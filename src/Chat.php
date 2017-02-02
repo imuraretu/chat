@@ -86,7 +86,7 @@ class Chat
      */
     public function removeParticipants($conversationId, $profileId)
     {
-        return $this->conversation($conversationId)->removeUsers($profileId);
+        return $this->conversation($conversationId)->removeParticipants($profileId);
     }
 
     /**
