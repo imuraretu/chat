@@ -3,6 +3,7 @@
 namespace Musonza\Chat\Messages;
 
 use Eloquent;
+use App\Attachment;
 use Musonza\Chat\Conversations\Conversation;
 use Musonza\Chat\Eventing\EventGenerator;
 use Musonza\Chat\Chat;
