@@ -46,13 +46,29 @@ class Message extends Eloquent
      *
      * @return     Message
      */
-    public function send(Conversation $conversation, $body, $profileId, $type = 'text')
+    public function send(Conversation $conversation, $body, $attachments, $profileId, $type = 'text')
     {
         $message = $conversation->messages()->create([
             'body' => $body,
             'profile_id' => $profileId,
             'type' => $type,
         ]);
+		
+		/* Add attachments. */
+        if($attachments) {
+            foreach($attachments as $uploadedFile) {
+                $destinationPath = base_path() . '\uploads\comments\\' . $profileId;
+                $aux = hash('sha256', mt_rand()) . '.' . $uploadedFile->getClientOriginalExtension();
+                $uploadedFile->move($destinationPath, $aux);
+
+                $attachment = new Attachment();
+                $attachment->type = 'file';
+                $attachment->href = 'uploads/comments/' . $profileId . '/' . $aux;
+                $attachment->extension = $uploadedFile->getClientOriginalExtension();
+
+                $message->attachments()->save($attachment);
+            }
+        }
 
         $this->raise(new MessageWasSent($message));
 

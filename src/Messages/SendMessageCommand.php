@@ -8,10 +8,11 @@ class SendMessageCommand
     public $body;
     public $conversation;
 
-    public function __construct($conversation, $body, $senderId)
+    public function __construct($conversation, $body, $attachments, $senderId)
     {
         $this->conversation = $conversation;
         $this->body = $body;
+		$this->attachments = $attachments;
         $this->senderId = $senderId;
     }
 }

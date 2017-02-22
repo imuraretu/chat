@@ -67,11 +67,11 @@ class Chat
      *
      * @return
      */
-    public function send($conversationId, $body, $senderId)
+    public function send($conversationId, $body, $attachments, $senderId)
     {
         $conversation = $this->conversation->findOrFail($conversationId);
 
-        $command = new SendMessageCommand($conversation, $body, $senderId);
+        $command = new SendMessageCommand($conversation, $body, $attachments, $senderId);
 
         $this->commandBus->execute($command);
     }
